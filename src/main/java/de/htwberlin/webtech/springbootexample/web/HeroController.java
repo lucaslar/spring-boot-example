@@ -5,19 +5,18 @@ import de.htwberlin.webtech.springbootexample.model.HeroWithId;
 import de.htwberlin.webtech.springbootexample.service.HeroService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @Controller
 @AllArgsConstructor
 @RequestMapping("/hero")
-public class RestExampleController {
+public class HeroController {
 
     private final HeroService heroService;
 
@@ -30,14 +29,12 @@ public class RestExampleController {
     public ResponseEntity<HeroWithId> getHero(@PathVariable("id") final Long id) {
         final HeroWithId found = heroService.getHero(id);
         return found != null ? ResponseEntity.ok(found) : ResponseEntity.notFound().build();
-
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<URI> addHero(@Valid @RequestBody Hero body) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Hero> addHero(@Valid @RequestBody Hero body) {
         final HeroWithId createdHero = heroService.addHero(body);
-        final URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/" + createdHero.getId()).build().toUri();
-        return ResponseEntity.created(uri).build();
+        return new ResponseEntity<>(createdHero, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
