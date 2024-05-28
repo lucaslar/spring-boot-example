@@ -1,7 +1,6 @@
 package de.htwberlin.webtech.springbootexample.web;
 
 import de.htwberlin.webtech.springbootexample.model.Hero;
-import de.htwberlin.webtech.springbootexample.model.HeroWithId;
 import de.htwberlin.webtech.springbootexample.service.HeroService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -11,35 +10,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/hero")
+@RequestMapping("/heroes")
 public class HeroController {
 
     private final HeroService heroService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<HeroWithId>> getHero() {
+    public ResponseEntity<Iterable<Hero>> getHero() {
         return ResponseEntity.ok(heroService.getHeroes());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HeroWithId> getHero(@PathVariable("id") final Long id) {
-        final HeroWithId found = heroService.getHero(id);
-        return found != null ? ResponseEntity.ok(found) : ResponseEntity.notFound().build();
+    public ResponseEntity<Hero> getHero(@PathVariable("id") final Long id) {
+        final Optional<Hero> found = heroService.getHero(id);
+        return found.isPresent() ? ResponseEntity.ok(found.get()) : ResponseEntity.notFound().build();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Hero> addHero(@Valid @RequestBody Hero body) {
-        final HeroWithId createdHero = heroService.addHero(body);
+        final Hero h = new Hero(body.getName(), body.getAffiliation(), body.getHeightInM());
+        final Hero createdHero = heroService.addHero(h);
         return new ResponseEntity<>(createdHero, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HeroWithId> updateHero(@PathVariable("id") final Long id, @RequestBody Hero body) {
-        final HeroWithId updatedHero = heroService.editHero(id, body);
+    public ResponseEntity<Hero> updateHero(@PathVariable("id") final Long id, @RequestBody Hero body) {
+        body.setId(id);
+        final Hero updatedHero = heroService.editHero(body);
         if (updatedHero == null) return ResponseEntity.notFound().build();
         else return ResponseEntity.ok(updatedHero);
     }

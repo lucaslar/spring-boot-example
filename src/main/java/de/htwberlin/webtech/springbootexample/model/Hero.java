@@ -1,14 +1,27 @@
 package de.htwberlin.webtech.springbootexample.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
 
-@AllArgsConstructor
+@Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Hero {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String affiliation;
     private double heightInM;
+
+    public Hero(String name, String affiliation, double heightInM) {
+        this.name = name;
+        this.affiliation = affiliation;
+        this.heightInM = heightInM;
+    }
 }
