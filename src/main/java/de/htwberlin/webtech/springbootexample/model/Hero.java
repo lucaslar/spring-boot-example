@@ -9,6 +9,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Hero {

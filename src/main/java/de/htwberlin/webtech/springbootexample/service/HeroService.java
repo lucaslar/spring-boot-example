@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class HeroService {
@@ -19,6 +21,13 @@ public class HeroService {
 
     public Iterable<Hero> getHeroes() {
         return this.repository.findAll();
+    }
+
+    public Iterable<Hero> getHeroes(final String affiliation) {
+        final Iterable<Hero> data = this.repository.findAll();
+        return StreamSupport.stream(data.spliterator(), false)
+                .filter(h -> h.getAffiliation() != null && h.getAffiliation().equalsIgnoreCase(affiliation))
+                .collect(Collectors.toSet());
     }
 
     public Hero addHero(final Hero hero) {

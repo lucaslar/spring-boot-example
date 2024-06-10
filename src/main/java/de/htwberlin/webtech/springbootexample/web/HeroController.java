@@ -20,8 +20,11 @@ public class HeroController {
     private final HeroService heroService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Iterable<Hero>> getHero() {
-        return ResponseEntity.ok(heroService.getHeroes());
+    public ResponseEntity<Iterable<Hero>> getHeroes(@RequestParam final Optional<String> affiliation) {
+        final Iterable<Hero> result = affiliation.isEmpty() || affiliation.get().isBlank()
+                ? heroService.getHeroes()
+                : heroService.getHeroes(affiliation.get());
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
